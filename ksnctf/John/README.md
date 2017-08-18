@@ -1,72 +1,100 @@
 # John
 
-* https://ksnctf.sweetduet.info/problem/6
+* https://ksnctf.sweetduet.info/problem/14
 
 ## linux の ユーザー アカウント保持方法
 
+* `/etc/passwd` `/etc/shadow` で保存している
+
+__/etc/passwd__
+
+* 他のユーザーから read 可能
+* パスワードは /etc/shadow に暗号化して保存している
+  * このファイルは 一般ユーザに読み込みの権限を与えないといけないので、パスワードを別管理にしている
+* `:` で区切られている
+
+名前             | 例         | 備考
+-----------------|------------|----------|-------------------------
+**ログイン名**  | root    |
+**パスワード**  | x    | パスワードは保存されていない
+**uid**       | 0    |
+**gid**       | 0    |
+**コメント**   | root    |
+**ホームディレクトリ**  | /root    |
+**ログイン時実行するコマンド**  | /bin/bash    |
+
+__/etc/shadow__
+
+* root だけ read 可能
+* `:` で区切られている
+
+名前             | 例         | 備考
+-----------------|------------|----------|-------------------------
+**ログイン名**  | test    |
+**暗号化パスワード**  | $6$eIaYHAqm$y/.5CEj/m2RDrubIh...(省略)  |
+**1970/1/1から最後にパスワードが変更された日までの日数**       | 15316    |
+**パスワードが変更できるまでの日数**       | 0    |
+**パスワードを変更しないといけなくなるまでの日数**   | 99999    |
+**パスワードが有効な期限の前にユーザが警告を受ける日数**  | 7    |
+**パスワードが無効になってからアカウントが使えなくなるまでの日数**  | 1   |
+**1970/1/1からアカウントが使えなくなるまでの日数**  | 15318    |
+**予約フィールド**  | /bin/bash    |
+
+
+__暗号化されたパスワードの形式__
+
+* `Hash方式 Salt $ Hash化されたパスワード` となっている
+* Hash方式 は下記が存在する
+  * $1$ MD5
+  * $5$ SHA-256
+  * $6$ SHA-512
+
+
+## 解き方
+
+* なんだこの文字列は? と思って色々検索する
+* Hash 形式や フィールドの数 から `/etc/shadow` ファイルが表示されていると気づく
+* `/etc/shadow` について学習
+  * この問題は SHA-512 のhash方式を取っている
+* `user99` のURLっぽいやつにアクセスしてみる
+  * 辞書っぽい
+* 下の順番で解いた
+
+__辞書ファイルを hash化したら正解が見えてくるかも__
+
+* user99 のURLの辞書一覧をテキストの保存して SHA-512 のhash に変換したら、どれかと一緒になるか検証
+  * [辞書ファイル](./dictionaly.txt)
+* salt値 : EACH
+  * 問題の `/etc/shadow` から取得
+* パスワード : ffl1bXDBqKUiD
+  * [辞書ファイル](./dictionaly.txt) から取得
 ```
-/etc/passed
-他のユーザーから read 可能
-パスワードは /etc/shadow に暗号化して保存している
+python -c "import crypt, getpass, pwd; print crypt.crypt('EACH','\$6\$ffl1bXDBqKUiD\$')"
 ```
 
-ログイン名
-パスワード
-uid
-gid
-コメント
-ホームディレクトリ
-ログイン時実行するコマンド
+***全然関係なさそう***
 
+__辞書ファイルは辞書攻撃(Dictionary attack)だったのか__
 
-/etc/shadow
-root だけ read 可能
+* [辞書ファイル](./dictionaly.txt) から Hash値を生成して パスワードを作成したらパスワードが分かるはず
+* php でやってみよう
+  * [dictionaly_arrack.php](./dictionaly_arrack.php)
 
-ユーザ名（ログイン名）
-暗号化されたパスワード
-パスワードの最終変更日
-変更可能最短期間（この期間を越えないと変更不可）
-未変更可能最長期間（この期間を越えたら変更必要）
-警告日（上記期日の何日前に警告するか）
-インアクティブ（ログインしないと無効になる日数）
-失効日（アカウント失効までの日数）
-フラグ（未使用）
+***なんかうまくいかない***
 
+* python でやってみよう
+  * [dictionaly_arrack.php](./dictionaly_arrack.php)
 
-暗号化されたパスワードの形式
-Hash方式 Salt $ Hash化されたパスワード
+***なんかうまくいかない***
 
-Hash方式
-$1$ MD5
-$5$ SHA-256
-$6$ SHA-512
+* mac OS の crypt は sha512 対応していないっぽい
+* python2 の `hashlib.sha512(salt + word).hexdigest()` はダメっぽい
+* python3 の `crypt.crypt()` でやってみよう
 
-SHA-512 のhash方式を取っている
+***出来た***
 
-http://ksnctf.sweetduet.info/q/14/dicti0nary_8Th64ikELWEsZFrf.txt
-を SHA-512 のhash に変換したら、どれかと一緒になるかと思ったけど ならなかった
-
-
-python -c 'import crypt, random, hashlib; random.seed(); print crypt.crypt("PASSWORD", "$6$" + hashlib.sha1(str(random.random())).hexdigest())';
-
-
-python -c "
-import crypt, getpass, pwd;
-print crypt.crypt('test','\$6\$SALTsalt\$')"
-
-
-
-
-
-php -r 'echo crypt("PASSWORD","$6$".hash("sha512", uniqid(mt_rand(),true))), PHP_EOL;'
-
-hash( 'SHA256', 'pass'.'salt' );
-
-$ php -r 'echo crypt("PASSWORD","$6$".sha1(uniqid(mt_rand(),true))), PHP_EOL;'
-
-# sha512 版
-$ php -r 'echo crypt("PASSWORD","$6$".hash("sha512", uniqid(mt_rand(),true))), PHP_EOL;'
-
+```
+# 結果
 vagrant@vagrant:~/src$ python dictionaly_attack.py
 FREQUENT
 LATTER
@@ -89,19 +117,12 @@ karaoke
 strange
 zero
 DELIGHT
+```
 
-FLAG_aSiuJHSLfzoQkszD
-aSiuJHSLfzoQkszD
+## まとめ
 
-http://docs.python.jp/2/library/crypt.html
-このモジュールは修正 DES アルゴリズムに基づいた一方向ハッシュ関数である crypt(3) ルーチンを実装しています
-
-http://docs.python.jp/2/library/hashlib.html
-このモジュールは、セキュアハッシュやメッセージダイジェスト用のさまざまなアルゴリズムを実装したものです。FIPSのセキュアなハッシュアルゴリズムである SHA1、SHA224、SHA256、SHA384およびSHA512 (FIPS 180-2 で定義されているもの) だけでなくRSAのMD5アルゴリズム (Internet RFC 1321 で定義されています)も実装しています
-
-上述のcryptは、linuxのshadow passwordの作成と同じ方式。
-
-Congratulation! Flag FLAG_aSiuJHSLfzoQkszD is correct.
-
-
---wordlist=~/src/dictionaly.txt
+* linux はパスワードの保存を `/etc/passwd` `/etc/shadow` で保存している
+* `/etc/shadow` に暗号化したパスワードが保存されている
+* UNIX 系 OS では C言語の `crypt` という関数を使用して暗号化されている
+  * [cryptのソース](https://svnweb.freebsd.org/base/head/lib/libcrypt/crypt.c?revision=4246&view=markup)
+  * [cryptの説明](http://d.hatena.ne.jp/JULY/20110317)
