@@ -156,14 +156,3 @@ ps -f -U username -u username --forest
 /var/log/kern.log
 grep 'oom-killer' /var/log/kern.log
 ```
-
-## vim
-
-```
-# エンコーディング
-:set fenc=utf8
-:set ff=unix
-
-# 行番号表示
-:set number
-```

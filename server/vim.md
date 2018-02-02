@@ -1,5 +1,14 @@
 # vim
 
+```
+# エンコーディング
+:set fenc=utf8
+:set ff=unix
+
+# 行番号表示
+:set number
+```
+
 以前作成した `vimrc` を記載する。あとで綺麗にする
 
 ```
