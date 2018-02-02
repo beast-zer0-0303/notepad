@@ -2,17 +2,11 @@
 
 ## 目次
 
+* [mac](./mac.md)
 * [linux](./linux.md)
 * [middleware](./middleware.md)
 * [python](./python.md)
 * [php](./php.md)
-
-## mac
-
-### コマンドライン コピペ
-```
-echo hoge | pbcopy
-```
 
 ## mark down
 ```

@@ -86,7 +86,7 @@ FROM
                    , t1.START_POS, t1.player_id, t1.data2
               FROM
                  (SELECT *, LOCATE("\"damage\":", CAST(data2 AS CHAR)) AS START_POS
-                  FROM test.raid_boss_players_log
+                  FROM test.log
                  ) t1
               WHERE t1.START_POS > 0
              ) t2
