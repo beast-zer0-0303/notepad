@@ -66,6 +66,9 @@ locate -r ".sock"
 # プロセスを標準出力に表示する
 strace -f -p 1220 -tt -s 256 2>&1 | grep "\.rb"
 strace -f -p 474476 -e write -tt -s 1024 2>&1
+
+# こんなオプションがいいかもしれない
+strace -fi
 ```
 
 ### ネットワーク周り
