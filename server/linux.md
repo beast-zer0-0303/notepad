@@ -83,7 +83,11 @@ printenv
 dig www.yahoo.co.jp
 
 # ネットワーク関連の統計情報を表示する
-netstat
+# -a：現在のすべての接続を表示する
+# -n：一切の名前解決を行わない
+# -t：TCPポートを表示する
+# -u：UDPポートを表示する
+netstat -antu
 
 # ルーティングテーブルの表示／設定を行う
 route
