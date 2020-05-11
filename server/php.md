@@ -107,3 +107,46 @@ phpbrew use [バージョン]
 # デフォルトで使用するphpのバージョンの指定
 phpbrew switch [バージョン]
 ```
+
+
+## 環境構築
+
+### composer install
+
+```
+curl -sS https://getcomposer.org/installer | php
+mv composer.phar /usr/local/bin/composer
+
+# 確認
+composer
+```
+
+```
+(プロジェクトルート)/
+  ├ composer.json
+  ├ composer.lock  
+  └ vendor/
+
+# install and update
+composer update
+```
+
+### laravel 環境構築
+
+```
+＃ laravel install
+composer global require laravel/installer
+
+# Laravelアプリを新規作成する
+laravel new basic-crud
+```
+
+##cake PHP
+```
+composer create-project --prefer-dist app iy
+```
+
+```
+# composer がうまくいかなかった時
+composer update -vvv
+```

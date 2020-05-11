@@ -159,3 +159,64 @@ ps -f -U username -u username --forest
 /var/log/kern.log
 grep 'oom-killer' /var/log/kern.log
 ```
+
+## mysql 起動しなくなった
+
+```
+# アンインストール
+sudo apt-get remove --purge mysql-server*
+mysql-common
+sudo apt-get autoremove --purge
+sudo rm -r /etc/mysql
+sudo rm -r /var/lib/mysql
+```
+
+```
+$ sudo apt-get update
+$ sudo apt-get install mysql-server
+$ mysql_secure_installation
+```
+
+```
+$ sudo apt-get install aptitude
+$ sudo aptitude update
+$ sudo aptitude safe-upgrade
+
+$ sudo aptitude install mysql-server
+```
+
+## myswql パスワード設定
+```
+use mysql
+UPDATE user SET authentication_string=password('root') WHERE user='root';
+flush privileges;
+```
+
+## 文字コード確認
+```
+nkf --guess　ファイル名
+file -i　ファイル名
+```
+
+```
+mysql> SET character_set_server=utf8;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SET character_set_database=utf8;
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+mysql> show variables like '%char%';
++--------------------------+----------------------------+
+| Variable_name            | Value                      |
++--------------------------+----------------------------+
+| character_set_client     | utf8                       |
+| character_set_connection | utf8                       |
+| character_set_database   | utf8                       |
+| character_set_filesystem | binary                     |
+| character_set_results    | utf8                       |
+| character_set_server     | utf8                       |
+| character_set_system     | utf8                       |
+| character_sets_dir       | /usr/share/mysql/charsets/ |
++--------------------------+----------------------------+
+8 rows in set (0.00 sec)
+```

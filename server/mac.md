@@ -63,6 +63,13 @@ $ brew doctor
 
 # brewの設定確認
 $ brew --config
+
+# brew の更新
+$ brew update
+
+# brew でインストールしたパッケージの更新
+$ brew upgrade
+
 ```
 
 ### install list
@@ -87,4 +94,6 @@ brew cask install go
 brew cask install macvim
 brew cask install dockertoolbox
 brew cask install firefox-ja
+brew cask install wireshark
+brew cask install wireshark-chmodbpf
 ```
